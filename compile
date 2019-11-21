@@ -1,0 +1,11 @@
+#!/bin/bash
+source /home/rtrr/PARM_EXEC/modulefiles/modulefile.jet.GSI_UPP_WRF
+
+TIMEDIR="/lfs1/projects/wrfruc/gge/git/datetime-fortran/build"
+
+
+BUFRLIB="/lfs1/projects/wrfruc/gge/git/build_raphrrr_d2e77eaf/lib/libbufr_v.a"
+TIMELIB="${TIMEDIR}/lib/libdatetime.a"
+TIMEINC="${TIMEDIR}/include"
+
+ifort pbdump.f90 -I${TIMEINC} ${TIMELIB} ${BUFRLIB} -o pbdump
