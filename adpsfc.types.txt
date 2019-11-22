@@ -1,0 +1,15 @@
+187, 287
+
+
+181  P used in assimilation
+183  non-use by assimilation due to missing obs error
+187  METAR mass field
+192  SYNOP without pressure
+193  METAR without pressure
+
+winds
+281  non-use by assimilation due to missing obs error
+284  SHIP, BUOY, C-MAN, TIDE GAUGE or SYNOP without pressure
+287  METAR
+292  SYNOP without pressure
+293  METAR without pressure

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#date=2017103116
 if [ $# -lt 1 ]; then
   echo "Usage: $0 YYYYMMDD"
   exit
@@ -13,6 +12,49 @@ message="ADPSFC"
 itype='287'
 dir='../../data'
 
+declare -a messages
+messages=(\
+"ADPSFC" \
+"AIRCAR" \
+"AIRCFT" \
+"ADPUPA" \
+"SATWND" \
+"PROFLR" \
+"VADWND" \
+"SFCSHP" \
+"GOESND" \
+"MSONET" \
+"GPSIPW" \
+"RASSDA" \
+"ASCATW" \
+)
+#RASSDA    (PREPBUFR: Radio Acoustic Sounding System (RASS) temp profile reports)
+#ASCATW    (PREPBUFR: ASCAT scatterometer data (reprocessed) wind speed and direction over the oceans)
+#GOESND    (PREPBUFR: GOES satellite data (soundings, retrievals, radiances))
+
+min='00'
+mkdir -p $date/$min
+cd $date/$min
+for message in ${messages[@]}
+do
+  $exe $dir/$date.rtma_ru.t$hh${min}z.prepbufr.tm00 $message > $message.txt
+  eval "cat $message.txt | grep ' ${itype}$' > $itype.txt"
+  cat $message.txt | cut -c70-72 | sort | uniq > bufrtype.txt
+done
+exit
+
+tot_msg=${#messages[@]}
+tot_msg=$(( $tot_msg - 1  ))
+#seq1=`seq 0 $tot_msg`
+seq1=`seq 0 3`
+bufrtype1=(  )
+
+#for message in ${messages[@]}; do
+for i in $seq1; do
+  echo ${messages[$i]}
+done
+exit
+
 for min in 00 #15 30 45
 do
   echo $min
@@ -20,8 +62,8 @@ do
   cd $date/$min
   $exe $dir/$date.rtma_ru.t$hh${min}z.prepbufr.tm00 $message > $message.txt
   eval "cat $message.txt | grep ' ${itype}$' > $itype.txt"
+  cat $message.txt | cut -c70-72 | sort | uniq > bufrtype.txt
   cat $itype.txt | cut -c31-34 | sort | uniq > timelists.txt
-  cat $itype.txt | cut -c70-72 | sort | uniq > bufrtype.txt
   cat $itype.txt | cut -c10-20 | sort > ${itype}_stnid.txt
   cat $itype.txt | cut -c10-20 | sort | uniq > ${itype}_stnid_unique.txt
 
