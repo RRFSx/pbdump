@@ -39,7 +39,7 @@ for message in ${messages[@]}
 do
   $exe $dir/$date.rtma_ru.t$hh${min}z.prepbufr.tm00 $message > $message.txt
   eval "cat $message.txt | grep ' ${itype}$' > $itype.txt"
-  cat $message.txt | cut -c70-72 | sort | uniq > bufrtype.txt
+  cat $message.txt | cut -c70-72 | sort | uniq > itype_$message.txt
 done
 exit
 

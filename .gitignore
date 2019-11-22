@@ -1,5 +1,4 @@
-*
-!pbdump.f90
-!compile
-!.gitignore
-!stats
+data
+2019*
+tmp.*
+pbdump
