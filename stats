@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#date=2017103116
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 YYYYMMDD"
+  exit
+fi
+
+date=$1
+hh=`echo $date |cut -c9-10`
+exe="../../pbdump"
+message="ADPSFC"
+itype='287'
+dir='../../data'
+
+for min in 00 #15 30 45
+do
+  echo $min
+  mkdir -p $date/$min
+  cd $date/$min
+  $exe $dir/$date.rtma_ru.t$hh${min}z.prepbufr.tm00 $message > $message.txt
+  eval "cat $message.txt | grep ' ${itype}$' > $itype.txt"
+  cat $itype.txt | cut -c31-34 | sort | uniq > timelists.txt
+  cat $itype.txt | cut -c70-72 | sort | uniq > bufrtype.txt
+  cat $itype.txt | cut -c10-20 | sort > ${itype}_stnid.txt
+  cat $itype.txt | cut -c10-20 | sort | uniq > ${itype}_stnid_unique.txt
+
+  echo > counts.txt
+  while read line; do
+  if [ ! -z "$line" ]; then
+    echo $line `cat $itype.txt | grep "_$line" | wc -l` >> counts.txt
+  fi
+  done < timelists.txt
+  cat counts.txt
+done
