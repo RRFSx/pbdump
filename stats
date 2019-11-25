@@ -7,10 +7,8 @@ fi
 
 date=$1
 hh=`echo $date |cut -c9-10`
-exe="../../pbdump"
-message="ADPSFC"
-itype='287'
-dir='../../data'
+exe="../../../pbdump"
+dir='../../../data'
 
 declare -a messages
 messages=(\
@@ -18,12 +16,12 @@ messages=(\
 "AIRCAR" \
 "AIRCFT" \
 "ADPUPA" \
+"MSONET" \
+"SFCSHP" \
 "SATWND" \
 "PROFLR" \
 "VADWND" \
-"SFCSHP" \
 "GOESND" \
-"MSONET" \
 "GPSIPW" \
 "RASSDA" \
 "ASCATW" \
@@ -32,46 +30,55 @@ messages=(\
 #ASCATW    (PREPBUFR: ASCAT scatterometer data (reprocessed) wind speed and direction over the oceans)
 #GOESND    (PREPBUFR: GOES satellite data (soundings, retrievals, radiances))
 
-min='00'
-mkdir -p $date/$min
-cd $date/$min
-for message in ${messages[@]}
-do
-  $exe $dir/$date.rtma_ru.t$hh${min}z.prepbufr.tm00 $message > $message.txt
-  eval "cat $message.txt | grep ' ${itype}$' > $itype.txt"
-  cat $message.txt | cut -c70-72 | sort | uniq > itype_$message.txt
-done
-exit
-
 tot_msg=${#messages[@]}
 tot_msg=$(( $tot_msg - 1  ))
 #seq1=`seq 0 $tot_msg`
-seq1=`seq 0 3`
-bufrtype1=(  )
+seq1=`seq 0 5`
+bufrtype0=(187 287) #ADPSFC
+bufrtype1=(133 233 ) #AIRCAR
+bufrtype2=(130 131 134 135 230 231 234 235) #AIRCFT
+bufrtype3=(120 220) #ADPUPA
+bufrtype4=(188 288 195 295) #MSONET
+bufrtype5=(180 183 194 280 284 294) #SFCSHP
 
-#for message in ${messages[@]}; do
-for i in $seq1; do
-  echo ${messages[$i]}
-done
-exit
-
-for min in 00 #15 30 45
+for min in 00 15 30 45
 do
-  echo $min
+  echo "=== $min ==="
   mkdir -p $date/$min
   cd $date/$min
-  $exe $dir/$date.rtma_ru.t$hh${min}z.prepbufr.tm00 $message > $message.txt
-  eval "cat $message.txt | grep ' ${itype}$' > $itype.txt"
-  cat $message.txt | cut -c70-72 | sort | uniq > bufrtype.txt
-  cat $itype.txt | cut -c31-34 | sort | uniq > timelists.txt
-  cat $itype.txt | cut -c10-20 | sort > ${itype}_stnid.txt
-  cat $itype.txt | cut -c10-20 | sort | uniq > ${itype}_stnid_unique.txt
+  #for message in ${messages[@]}
+  for i in $seq1; do
+    message=${messages[$i]}
+    echo "**$message**"
+    mkdir -p $message; cd $message
 
-  echo > counts.txt
-  while read line; do
-  if [ ! -z "$line" ]; then
-    echo $line `cat $itype.txt | grep "_$line" | wc -l` >> counts.txt
-  fi
-  done < timelists.txt
-  cat counts.txt
+    #extract given message and count its bufr types
+    $exe $dir/$date.rtma_ru.t$hh${min}z.prepbufr.tm00 $message > $message.txt
+    cat $message.txt | cut -c70-72 | sort | uniq > types_$message.txt
+
+    #generate stats for each bufrtype
+    eval mytypes=( \"\${bufrtype${i}[@]}\" ) 
+    for itype in "${mytypes[@]}"
+    do
+      echo "$itype"
+      eval "cat $message.txt | grep ' ${itype}$' > $itype.txt"
+
+      cat $itype.txt | cut -c31-34 | sort | uniq > ${itype}_timelists.txt
+      cat $itype.txt | cut -c10-20 | sort > ${itype}_stnid.txt
+      cat $itype.txt | cut -c10-20 | sort | uniq > ${itype}_stnid_unique.txt
+
+      echo > ${itype}_counts.txt
+      while read line; do
+      if [ ! -z "$line" ]; then
+        echo $line `cat $itype.txt | grep "_$line" | wc -l` >> ${itype}_counts.txt
+      fi
+      done < ${itype}_timelists.txt
+    done
+
+    #go above one level
+    cd ..
+  done
+  
+  #go above two levels
+  cd ../..
 done
