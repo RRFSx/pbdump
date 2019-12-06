@@ -2,3 +2,6 @@ data
 2019*
 tmp.*
 pbdump
+*.txt
+*tar.gz
+*png

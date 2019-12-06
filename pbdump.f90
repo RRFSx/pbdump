@@ -95,22 +95,14 @@ program prepbufr_decode_all
    endif
  endif
  if (k>3) then
-      call getarg(3,arg)
+   call getarg(4,arg)
    stmp0=trim(arg)
-   if (stmp0(1:4)=='dump') then
-     ldump=.true.
-     if (stmp0(5:7)=='obs') then
-       ldumpobs=.true.
-     else if (stmp0(5:7)=='err') then
-       ldumperr=.true.
-     else if (stmp0(5:7)=='qcf') then
-       ldumpqcf=.true.
-     else if (stmp0(5:7)=='all') then
-       ldumpall=.true.
-     else
-       print *, 'only support dumpobs,dumperr,dumpqcf,dumpall'
-       stop
-     endif
+   if (stmp0(1:1)=='2'.or. stmp0(1:1)=='1') then  !time peroid limit
+     !yyyymmddhhmm
+     sTime1=stmp0(1:12)
+     sTime2=stmp0(14:25)
+     print*,'time peroid: ',trim(sTime1), ' to ', trim(sTime2)
+     ldate=.true.
    else
      print *, 'only support dumpobs,dumperr,dumpqcf,dumpall,201711011656-201711011700'
      print *, 'ignore the parameter -',trim(arg)
