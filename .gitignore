@@ -5,3 +5,5 @@ pbdump
 *.txt
 *tar.gz
 *png
+output*
+prepbufr
