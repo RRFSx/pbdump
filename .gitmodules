@@ -1,3 +1,6 @@
 [submodule "datetime-fortran"]
 	path = datetime-fortran
 	url = https://github.com/RRFSx/datetime-fortran.git
+[submodule "bufrlib"]
+	path = bufrlib
+	url = https://github.com/NOAA-EMC/NCEPLIBS-bufr.git
